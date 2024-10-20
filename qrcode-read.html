@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitor de QR Code por Imagem</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        input[type="file"] {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leitor de QR Code por Imagem</h1>
+
+    <input type="file" accept="image/*" id="file-selector">
+    <div id="result">
+        <h2>Resultado:</h2>
+        <p id="qr-result">Aguardando imagem...</p>
+    </div>
+
+    <script>
+        document.getElementById('file-selector').addEventListener('change', function(event) {
+            let file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.onload = function() {
+                let img = new Image();
+                img.src = reader.result;
+
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    let ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    let qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                    if (qrCode) {
+                        document.getElementById('qr-result').textContent = `QR Code lido: ${qrCode.data}`;
+                    } else {
+                        document.getElementById('qr-result').textContent = 'Nenhum QR Code encontrado.';
+                    }
+                };
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
