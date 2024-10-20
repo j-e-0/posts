@@ -16,6 +16,12 @@
         input[type="file"] {
             margin-top: 20px;
         }
+        #explanation {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -25,6 +31,20 @@
     <div id="result">
         <h2>Resultado:</h2>
         <p id="qr-result">Aguardando imagem...</p>
+    </div>
+
+    <div id="explanation">
+        <h2>Como funciona a leitura de QR Code?</h2>
+        <p>
+            O processo de leitura do QR Code nesta página segue os seguintes passos:
+        </p>
+        <ol>
+            <li>Você seleciona uma imagem do seu dispositivo que contém um QR Code.</li>
+            <li>O código JavaScript carrega a imagem e desenha-a em um <em>canvas</em> invisível no fundo.</li>
+            <li>Uma vez que a imagem é renderizada, os dados de pixel são extraídos usando o método <code>getImageData()</code>, que captura cada ponto da imagem em forma de dados binários.</li>
+            <li>O <em>script</em> usa a biblioteca <strong>jsQR</strong> para analisar os dados de imagem e procurar o padrão do QR Code.</li>
+            <li>Se um QR Code for encontrado, seu conteúdo é extraído e exibido na página. Caso contrário, a mensagem "Nenhum QR Code encontrado" será exibida.</li>
+        </ol>
     </div>
 
     <script>
