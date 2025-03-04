@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Regression</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #f4f4f4;
+            color: #333;
+        }
+        .box {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #0056b3;
+        }
+        .formula {
+            font-size: 1.2em;
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        .input-container {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-container ul {
+            list-style: none;
+            padding: 0;
+            height: auto;
+        }
+        .input-container li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .input-container label {
+            width: 120px;
+            font-weight: bold;
+        }
+        .input-container select, .input-container input, .input-container button {
+            flex: 1;
+            padding: 5px;
+        }
+        .canvas {
+            display: contents;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Linear Regression Components</h1>
+
+    <div class="box">
+        <h2>What is Linear Regression?</h2>
+        <p>Linear regression is a statistical method used to model the relationship between a dependent variable (Y) and an independent variable (X). The equation is given as:</p>
+        <p class="formula">Y = mX + b</p>
+        <p>where <strong>m</strong> is the slope and <strong>b</strong> is the intercept.</p>
+    </div>
+    
+    <div class="input-container">
+        <h2>Data Input</h2>
+        <ul>
+            <li>
+                <label for="fileInput">File CSV:</label>
+                <input type="file" id="fileInput" accept=".csv">
+            </li>
+            <li>
+                <label for="yColumn">Y:</label>
+                <select id="yColumn"></select>
+            </li>
+            <li>
+                <label for="xColumn">X:</label>
+                <select id="xColumn"></select>
+            </li>
+            <li>
+                <button id="updateGraph">Update Graph</button>
+            </li>
+        </ul>
+        <hr>
+        <div id="resultsXY"></div>
+        <canvas id="regressionChartXY" class="canvas"></canvas>
+    </div>
+    
+    <div class="box">
+        <h2>Slope (\(m\))</h2>
+        <p>The slope represents the rate of change of \( y \) with respect to \( x \):</p>
+        <p class="formula">\( m = \frac{n \sum xy - \sum x \sum y}{n \sum x^2 - (\sum x)^2} \)</p>
+    </div>
+    
+    <div class="box">
+        <h2>Intercept (\(b\))</h2>
+        <p>The intercept is the value of \( y \) when \( x = 0 \):</p>
+        <p class="formula">\( b = \frac{\sum y - m \sum x}{n} \)</p>
+    </div>
+    
+    <div class="box">
+        <h2>Standard Error (\(SE\))</h2>
+        <p>Measures the average deviation of residuals:</p>
+        <p class="formula">\( SE = \sqrt{\frac{\sum (y - (mx + b))^2}{n - 2}} \)</p>
+    </div>
+    
+    <div class="box">
+        <h2>Chi-Square (\(\chi^2\))</h2>
+        <p>The chi-square test helps determine if the regression model is a good fit. It quantifies how well the model fits the data:</p>
+        <p class="formula">\( \chi^2 = \sum \frac{(y - (mx + b))^2}{\sigma^2} \)</p>
+    </div>
+    
+    <div class="box">
+        <h2>Chi-Square Test Result</h2>
+        <p>If \( \chi^2 \) is greater than the critical threshold, the model may be inadequate.</p>
+    </div>
+    
+    <div class="box">
+        <h2>Critical Value Calculation</h2>
+        <p>The critical value is determined based on the degrees of freedom and the significance level (\(\alpha = 0.05\)). Using an approximation:</p>
+        <p class="formula">\( \chi^2_{crit} \approx df + \sqrt{2 \cdot df} \cdot \ln(1/\alpha) \)</p>
+    </div>
+    
+    <div class="box">
+        <h2>Prediction Formula</h2>
+        <p>To predict \( y \) given \( x \):</p>
+        <p class="formula">\( y = mx + b \)</p>
+    </div>
+
+    <script>
+        let rawData = [];
+        let columnNames = [];
+        let chartXY = false;
+        let chartYX = false;
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n').map(line => line.split(','));
+                columnNames = lines[0];
+                rawData = lines.slice(1)
+                    .map(row => row.map(value => {
+                        const num = parseFloat(value);
+                        return isNaN(num) ? null : num;
+                    }))
+                    .filter(row => row.length === columnNames.length);
+
+                const validColumns = columnNames.map((col, colIndex) => {
+                    return rawData.some(row => row[colIndex] !== null);
+                });
+
+                rawData = rawData.map(row => row.filter((value, colIndex) => validColumns[colIndex]));
+                columnNames = columnNames.filter((col, colIndex) => validColumns[colIndex]);
+                rawData = rawData
+                    .filter(row => row.length === columnNames.length && row.every(value => value !== null));
+
+                populateDropdowns();
+            };
+
+            reader.readAsText(file);
+        });
+
+        function populateDropdowns() {
+            const xSelect = document.getElementById('xColumn');
+            const ySelect = document.getElementById('yColumn');
+            xSelect.innerHTML = '';
+            ySelect.innerHTML = '';
+            columnNames.forEach((name, index) => {
+                if (name.trim()) {
+                    xSelect.innerHTML += `<option value="${index}">${name}</option>`;
+                    ySelect.innerHTML += `<option value="${index}">${name}</option>`;
+                }
+            });
+        }
+
+        function linearRegression(x, y) {
+            const n = x.length;
+            const sumX = x.reduce((a, b) => a + b, 0);
+            const sumY = y.reduce((a, b) => a + b, 0);
+            const sumXY = x.map((xi, i) => xi * y[i]).reduce((a, b) => a + b, 0);
+            const sumXX = x.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            const degreesOfFreedom = n - 2;
+            const residuals = y.map((yi, i) => yi - (slope * x[i] + intercept));
+            const residualSum = residuals.reduce((a, b) => a + b * b, 0);
+            const variance = residualSum / degreesOfFreedom;
+            const stdError = Math.sqrt(variance);
+            
+            const chiSquare = residuals.reduce((sum, res) => sum + Math.pow(res, 2) / variance, 0);
+            const chiSquareCriticalValue = chiSquareCriticalValueForAlpha(0.05, degreesOfFreedom);
+            const chiSquareTestResult = chiSquare > chiSquareCriticalValue ? "Model inadequate" : "Model adequate";
+            
+            function predict(value) {
+                return slope * value + intercept;
+            }
+            
+            return { slope, intercept, stdError, chiSquare, chiSquareTestResult, predict };
+        }
+
+        function chiSquareCriticalValueForAlpha(alpha, degreesOfFreedom) {
+            if (degreesOfFreedom < 1) return 0;
+
+            const term = Math.sqrt(2 * degreesOfFreedom);
+            const result = degreesOfFreedom + term * Math.log(1 / alpha);
+            
+            return result;
+        }
+
+        document.getElementById('updateGraph').addEventListener('click', function() {
+            const xIndex = parseInt(document.getElementById('xColumn').value);
+            const yIndex = parseInt(document.getElementById('yColumn').value);
+            if (isNaN(xIndex) || isNaN(yIndex) || xIndex === yIndex) return;
+
+            const filteredData = rawData.filter(row => row[xIndex] !== null && row[yIndex] !== null);
+            const x = filteredData.map(row => row[xIndex]);
+            const y = filteredData.map(row => row[yIndex]);
+
+            if (x.length === 0 || y.length === 0) {
+                console.error("Nenhum dado válido após filtragem!");
+                return;
+            }
+
+            const resultsXY = linearRegression(x, y);
+
+            document.getElementById('resultsXY').innerHTML = `
+                <h2>Results</h2>
+                <p><strong>Regression X -> Y</strong>: y = ${resultsXY.slope.toFixed(4)}x + ${resultsXY.intercept.toFixed(4)}</p>
+                <p>Standard Error: ${resultsXY.stdError.toFixed(4)}</p>
+                <p>Chi-Square: ${resultsXY.chiSquare.toFixed(4)}</p>
+                <p>Chi-Square Test: ${resultsXY.chiSquareTestResult}</p>
+            `;
+            
+            if (chartXY) chartXY.destroy();
+            chartXY = plotRegression("regressionChartXY", x, y, resultsXY, "X -> Y", "red");
+        });
+
+        function plotRegression(canvasId, x, y, results, label, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const minX = Math.min(...x);
+            const maxX = Math.max(...x);
+            const bufferX = (maxX - minX) * 0.1;
+            const extendedX = [minX - bufferX, maxX + bufferX];
+            const regressionLine = extendedX.map(xi => ({ x: xi, y: results.predict(xi) }));
+            
+            return new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        { label: 'Data', data: x.map((xi, i) => ({ x: xi, y: y[i] })), backgroundColor: 'blue' },
+                        { label: `Regression ${label}`, data: regressionLine, type: 'line', borderColor: color, fill: false }
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: { min: minX - bufferX, max: maxX + bufferX },
+                        y: { min: Math.min(...y) - bufferX, max: Math.max(...y) + bufferX }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
