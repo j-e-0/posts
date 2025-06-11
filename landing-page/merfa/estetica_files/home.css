@@ -46,7 +46,8 @@ main {
     display: flex;
     flex-direction: column;
     background-color: var(--branco-creme);
-    position: relative
+    position: relative;
+    align-items: center;
 }
 
 body,
@@ -236,7 +237,8 @@ footer {
     padding-top: 7.8rem;
     justify-content: center;    
     align-items: center;
-    padding-bottom: 1.8rem
+    padding-bottom: 1.8rem;
+    width: 100%;
 }
 
 footer .top {
@@ -697,7 +699,7 @@ nav .menuactive {
     line-height: 120%;
     text-align: center;
     color: #1d4159;
-    width: 82.8rem;
+    width: 75rem;
     margin-bottom: 3.4rem
 }
 
@@ -736,14 +738,16 @@ nav .menuactive {
 .estetica-materna {
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    padding-bottom: 10rem;
+    width: 100%;
 }
 
 .estetica-materna img {
     width: 62.2rem;
     height: 61.6rem;
     object-fit: cover;
-    z-index: 10
+    z-index: 10;
 }
 
 .estetica-materna .content {
@@ -755,7 +759,7 @@ nav .menuactive {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center
+    justify-content: center;
 }
 
 .estetica-materna .content .text {
@@ -796,7 +800,8 @@ nav .menuactive {
 
 @media(max-width: 700px) {
     .estetica-materna {
-        flex-direction: column
+        flex-direction: column;
+        padding-bottom: 0;
     }
 
     .estetica-materna img {
@@ -835,13 +840,137 @@ nav .menuactive {
     }
 }
 
+@media(min-width: 701px) and (max-width: 1231px) {
+    .estetica-materna img {
+        width: 35%;
+    }
+
+    .estetica-materna .content{
+        z-index: 11;
+        padding-left: 3rem;
+        width: 65%;
+    }
+}
+
+.taping {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.taping img {
+    width: 62.2rem;
+    height: 61.6rem;
+    object-fit: cover;
+    z-index: 10;
+    width: 35%;
+}
+
+.taping .content {
+    background: var(--rosa-claro);
+    padding-top: 9.2rem;
+    padding-bottom: 10rem;
+    flex: 1;
+    margin-left: -4%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 65%;
+}
+
+.taping .content .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem
+}
+
+.taping .content .text h2 {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 120%;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--terracota)
+}
+
+.taping .content .text p {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+    letter-spacing: -0.015em;
+    color: #1d4159;
+    width: 542px
+}
+
+.taping .content .text p b {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 120%;
+    color: #1d4159;
+    width: 524px
+}
+
+.taping .content .text .pinkButton {
+    width: fit-content
+}
+
+@media(max-width: 700px) {
+    .taping {
+        flex-direction: column
+    }
+
+    .taping img {
+        width: 80vw;
+        height: unset;
+        z-index: 1
+    }
+
+    .taping .content {
+        width: 100vw;
+        margin-left: unset;
+        margin-top: -25rem;
+        padding-top: 32rem
+    }
+
+    .taping .content .text {
+        width: 85vw;
+        text-align: center
+    }
+
+    .taping .content .text .pinkButton {
+        margin: auto
+    }
+
+    .taping .content .text p {
+        width: unset;
+        text-align: center;
+        font-size: 1.6rem
+    }
+
+    .taping .content .text p b {
+        display: block;
+        font-size: 2rem;
+        text-align: center;
+        width: unset
+    }
+}
+
+@media(min-width: 701px) and (max-width: 1231px) {
+    .taping .content{
+        z-index: 11;
+        padding-left: 3rem;
+    }
+}
+
 .massagem-modeladora {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8.3rem;
     margin-top: 8.3rem;
-    margin-bottom: 9.2rem
+    margin-bottom: 9.2rem;
 }
 
 .massagem-modeladora img {
@@ -912,6 +1041,18 @@ nav .menuactive {
     .massagem-modeladora img {
         width: 80vw;
         height: unset
+    }
+}
+
+
+@media(min-width: 701px) and (max-width: 1231px) {
+    .massagem-modeladora .content {
+        width: 50%;
+        padding-left: 3rem;
+    }
+
+    .massagem-modeladora img{
+        width: 30%;
     }
 }
 
