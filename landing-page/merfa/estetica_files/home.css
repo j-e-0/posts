@@ -3,12 +3,15 @@
   --rosa-medio: #C99A9A;
   --rosa-escuro: #704545; /*704545*/
   --marrom-claro: #A98C84;
+  --marrom-escuro: #5e3809c2;
   --bege-neutro: #F6F2EF;
+  --azul-escuro: #0200558c;
 
   --nude-claro: #F4E3D7;
   --nude-medio: #D9B6A3;
   --marrom-palido: #B88E7C;
   --branco-creme: #FDF9F6;
+  --branco-leve: #ffffffe6;
   --terracota: #C17B63;
 }
 
@@ -630,7 +633,11 @@ nav .menuactive {
     font-size: 48px;
     line-height: 120%;
     letter-spacing: -0.015em;
-    color: #5b3e34
+    color: var(--marrom-escuro)
+}
+
+.banner .content .option2-h1 {
+    color: var(--azul-escuro)
 }
 
 .banner .content p {
@@ -640,6 +647,10 @@ nav .menuactive {
     line-height: 29px;
     letter-spacing: -0.015em;
     color: #cb8971
+}
+
+.banner .content .option2-p {
+    color: var(--branco-leve)
 }
 
 @media(max-width: 700px) {
@@ -669,7 +680,8 @@ nav .menuactive {
     .banner .content p {
         font-size: 2rem;
         text-align: center;
-        line-height: 2.2rem
+        line-height: 2.2rem;
+        color: var(--branco-leve);
     }
 }
 
@@ -841,6 +853,11 @@ nav .menuactive {
 }
 
 @media(min-width: 701px) and (max-width: 1231px) {
+
+    .banner .content p {
+        color: var(--branco-leve);
+    }
+
     .estetica-materna img {
         width: 35%;
     }
